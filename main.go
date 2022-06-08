@@ -19,6 +19,7 @@ var templates = make(map[string]*template.Template, 3)
 var responses = make([]*Invitee, 0, 10)
 
 func main() {
+	// load templates
 	loadTemplates()
 }
 
