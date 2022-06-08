@@ -29,6 +29,43 @@ func listHandler(w http.ResponseWriter, r *http.Request) {
 	templates["list"].Execute(w, responses)
 }
 
+type FormData struct {
+	*Invitee
+	Errors []string
+}
+
+// form Handler
+func formHandler(w http.ResponseWriter, r *http.Request) {
+	// if the method is GET
+	if r.Method == http.MethodGet {
+		templates["form"].Execute(w, FormData{
+			Invitee: &Invitee{},
+			Errors:  []string{},
+		})
+	} else if r.Method == http.MethodPost {
+		// parse the form from request
+		r.ParseForm()
+
+		// create new invitee
+		newInvitee := Invitee{
+			Name:       r.Form["name"][0],
+			Email:      r.Form["email"][0],
+			Phone:      r.Form["phone"][0],
+			WillAttend: r.Form["willattend"][0] == "true",
+		}
+
+		// add new Invitee to responses
+		responses = append(responses, &newInvitee)
+
+		// execute template according attendance
+		if newInvitee.WillAttend {
+			templates["thanks"].Execute(w, newInvitee.Name)
+		} else {
+			templates["sorry"].Execute(w, newInvitee.Name)
+		}
+	}
+}
+
 func main() {
 	// load templates
 	loadTemplates()
@@ -36,6 +73,7 @@ func main() {
 	// create and start http server
 	http.HandleFunc("/", welcomeHandler)
 	http.HandleFunc("/list", listHandler)
+	http.HandleFunc("/form", formHandler)
 	http.ListenAndServe(":3000", nil)
 }
 
