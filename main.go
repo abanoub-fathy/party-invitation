@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 )
 
 type Invitee struct {
@@ -52,6 +53,26 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 			Email:      r.Form["email"][0],
 			Phone:      r.Form["phone"][0],
 			WillAttend: r.Form["willattend"][0] == "true",
+		}
+
+		// validate data
+		errors := []string{}
+		if strings.TrimSpace(newInvitee.Name) == "" {
+			errors = append(errors, "Name can not be empty")
+		}
+		if strings.TrimSpace(newInvitee.Email) == "" {
+			errors = append(errors, "Email can not be empty")
+		}
+		if strings.TrimSpace(newInvitee.Phone) == "" {
+			errors = append(errors, "Phone number can not be empty")
+		}
+
+		if len(errors) > 0 {
+			templates["form"].Execute(w, FormData{
+				Invitee: &newInvitee,
+				Errors:  errors,
+			})
+			return
 		}
 
 		// add new Invitee to responses
