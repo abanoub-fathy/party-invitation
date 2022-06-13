@@ -49,21 +49,21 @@ func formHandler(w http.ResponseWriter, r *http.Request) {
 
 		// create new invitee
 		newInvitee := Invitee{
-			Name:       r.Form["name"][0],
-			Email:      r.Form["email"][0],
-			Phone:      r.Form["phone"][0],
+			Name:       strings.TrimSpace(r.Form["name"][0]),
+			Email:      strings.TrimSpace(r.Form["email"][0]),
+			Phone:      strings.TrimSpace(r.Form["phone"][0]),
 			WillAttend: r.Form["willattend"][0] == "true",
 		}
 
 		// validate data
 		errors := []string{}
-		if strings.TrimSpace(newInvitee.Name) == "" {
+		if newInvitee.Name == "" {
 			errors = append(errors, "Name can not be empty")
 		}
-		if strings.TrimSpace(newInvitee.Email) == "" {
+		if newInvitee.Email == "" {
 			errors = append(errors, "Email can not be empty")
 		}
-		if strings.TrimSpace(newInvitee.Phone) == "" {
+		if newInvitee.Phone == "" {
 			errors = append(errors, "Phone number can not be empty")
 		}
 
